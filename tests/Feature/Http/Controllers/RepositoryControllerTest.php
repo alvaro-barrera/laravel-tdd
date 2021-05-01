@@ -43,6 +43,52 @@ class RepositoryControllerTest extends TestCase
             ->assertSee($repository->url);
     }
 
+    public function test_show()
+    {
+        $user = User::factory()->create(); // id = 1
+        $repository = Repository::factory()->create(['user_id' => $user->id]); // user_id = 1
+
+        $this
+            ->actingAs($user)
+            ->get("repositories/$repository->id")
+            ->assertStatus(200);
+    }
+
+    public function test_show_policy()
+    {
+        $user = User::factory()->create(); // id = 1
+        $repository = Repository::factory()->create(); // user_id = 1
+
+        $this
+            ->actingAs($user)
+            ->get("repositories/$repository->id")
+            ->assertStatus(403);
+    }
+
+    public function test_edit()
+    {
+        $user = User::factory()->create(); // id = 1
+        $repository = Repository::factory()->create(['user_id' => $user->id]); // user_id = 1
+
+        $this
+            ->actingAs($user)
+            ->get("repositories/$repository->id/edit")
+            ->assertStatus(200)
+            ->assertSee($repository->url)
+            ->assertSee($repository->description);
+    }
+
+    public function test_edit_policy()
+    {
+        $user = User::factory()->create(); // id = 1
+        $repository = Repository::factory()->create(); // user_id = 1
+
+        $this
+            ->actingAs($user)
+            ->get("repositories/$repository->id/edit")
+            ->assertStatus(403);
+    }
+
     public function test_guest()
     {
         $this->get('repositories')->assertRedirect('login');
@@ -74,6 +120,16 @@ class RepositoryControllerTest extends TestCase
             ->assertStatus(302)
             ->assertSessionHasErrors(['url', 'description']);
         $this->withoutExceptionHandling();
+    }
+
+    public function test_create()
+    {
+
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get('repositories/create')
+            ->assertStatus(200);
     }
 
     public function test_store()
