@@ -60,6 +60,6 @@ class User extends Authenticatable
     ];
 
     public function repositories(){
-        return $this->hasMany(Repository::class);
+       return $this->hasMany(Repository::class);
     }
 }
