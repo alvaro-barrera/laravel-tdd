@@ -7,6 +7,13 @@ use Illuminate\Http\Request;
 
 class RepositoryController extends Controller
 {
+    public function index(Request $request)
+    {
+        return view('repositories.index', [
+            'repositories' => $request->user()->repositories
+        ]);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -24,7 +31,7 @@ class RepositoryController extends Controller
             'url' => 'required',
             'description' => 'required'
         ]);
-        if ($request->user()->id != $request->user_id) {
+        if ($request->user()->id != $repository->user_id) {
             abort(403);
         }
         $repository->update($request->all());
@@ -32,9 +39,11 @@ class RepositoryController extends Controller
         return redirect()->route('repositories.edit', $repository);
     }
 
-    public function destroy(Repository $repository)
+    public function destroy(Request $request, Repository $repository)
     {
-
+        if ($request->user()->id != $repository->user_id) {
+            abort(403);
+        }
         $repository->delete();
 
         return redirect()->route('repositories.index');
