@@ -201,7 +201,6 @@ class RepositoryControllerTest extends TestCase
 
         $repository = Repository::factory()->create(['user_id' => $user->id]);
 
-
         $this->actingAs($user)
             ->delete("repositories/$repository->id")
             ->assertRedirect("repositories");
